@@ -13,12 +13,12 @@
 
 int main(int argc,char *argv[]) {
 	//что делает программа
-	printf("Данная программа выполняет арифметические действия над введенными числами(векторами)\n");
+	//printf("Данная программа выполняет арифметические действия над введенными числами(векторами)\n");
 	//возможные операции и их обозначение
-	printf("Возможные операции:\n");
-	printf("сложение(+),вычитание(-),умножение(*),деление(/),\n");
-	printf("возведение в степень(^),факториал(!),целочисленное деление(:),деление с остатком(;)\n");
-	printf("Для работы с векторами (v)\n");
+	//printf("Возможные операции:\n");
+	//printf("сложение(+),вычитание(-),умножение(*),деление(/),\n");
+	//printf("возведение в степень(^),факториал(!),целочисленное деление(:),деление с остатком(;)\n");
+	//printf("Для работы с векторами (v)\n");
 
     double num1,num2, res; // 1 и 2  введенное число, результат действия
     char sign; //знак арифметического действия
@@ -28,133 +28,153 @@ int main(int argc,char *argv[]) {
     setvbuf(stdout, NULL, _IONBF, 0);
     setvbuf(stderr, NULL, _IONBF, 0);
     do { //цикл
-    //повтор операций
-    printf("\nВыберите операцию(+ - * / ^ ! : ;)");
-    printf("\nДля работы с векторами (v)\n");
-    scanf(" %c",&sign);
+    // файлы
+    FILE *input, *output;
+    char input_name[259], output_name[259]; // имена файлов ввода и вывода данных
+    printf("Введите название файла для чтения данных, формата '.txt'");
+    scanf("%s", input_name);
+    printf("Введите название файла для записи данных формата '.txt'");
+    scanf("%s", output_name);
+    input = fopen(input_name,"r");
+    output = fopen(output_name,"w");
+    while(fscanf(input, " %c", &sign) != EOF){
+
     //выполнение арифметического действия и вывод результата
     switch(sign) {
     	case 'v': // операции с векторами
-    		printf("Введите размер векторов: ");
-    		scanf("%i",&size);
+    		fscanf(input, " %c",&sign);
+    		//Вводиться размер векторов
+    		fscanf(input, " %i",&size);
     		Vec1 = malloc(size*sizeof(double));
     		Vec2 = malloc(size*sizeof(double));
-    		printf("Введите координаты первого вектора: ");
+    		//"Введите координаты первого вектора:
     		for(int i=0;i<size;i++) {
-    			scanf(" %lf",&Vec1[i]);
+    			fscanf(input, " %lf",&Vec1[i]);
     		}
-    		printf("Введите координаты второго вектора: ");
+    		//"Введите координаты второго вектора:
     		for(int i=0;i<size;i++) {
-    		    scanf(" %lf",&Vec2[i]);
+    		    fscanf(input, " %lf",&Vec2[i]);
     		}
-    		printf("Выберите операцию(+,-,*): "); // повтор операций для векторов
-    		scanf(" %c",&sign);
     		switch(sign) {
-    			case '+':
-    				printf("Vector1 + Vector2 = "); // сложение векторов
+    			case '+':// сложение векторов
+    				fprintf(output, "("); //доп скобки
     				for(int  i= 0; i < size; i++) {
-    					printf("%lf ", Vec1[i] + Vec2[i]);
+    					fprintf(output,"%lf ",Vec1[i]); // вывод 1 вектора
     				}
-    				break;
-    			case '-':
-    				printf("Vector1 - Vector2 = "); // вычитание векторов
+    				fprintf(output, ") + ("); // доп скобки
     				for(int  i= 0; i < size; i++) {
-    				    printf("%lf ", Vec1[i] - Vec2[i]);
+    				    fprintf(output,"%lf ",Vec2[i]); // вывод 2 вектора
     				}
+    				fprintf(output, ") = ("); // доп скобки
+    				for(int  i= 0; i < size; i++) {     // вывод результата
+    					fprintf(output,"%lf ", Vec1[i] + Vec2[i]);
+    				}
+    				fprintf(output, ")\n"); // закрывающие скобки
     				break;
-    			case '*':
-    				printf("Vector1 * Vector2 = "); // скалярное произведение векторов
+    			case '-': // вычитание векторов
+    				fprintf(output, "("); //доп скобки
+    				for(int  i= 0; i < size; i++) {
+    					fprintf(output,"%lf ",Vec1[i]); // вывод 1 вектора
+    				}
+    				fprintf(output, ") - ("); // доп скобки
+    				for(int  i= 0; i < size; i++) {
+    				    fprintf(output,"%lf ",Vec2[i]); // вывод 2 вектора
+    				}
+    				fprintf(output, ") = ("); // доп скобки
+    				for(int  i= 0; i < size; i++) {     // вывод результата
+    					fprintf(output,"%lf ", Vec1[i] - Vec2[i]);
+    				 }
+    				fprintf(output, ")\n"); // закрывающие скобки
+    				break;
+    			case '*': // скалярное произведение векторов
+    				fprintf(output, "("); //доп скобки
+    				for(int  i= 0; i < size; i++) {
+    					fprintf(output,"%lf ",Vec1[i]); // вывод 1 вектора
+    				}
+    				fprintf(output, ") + ("); // доп скобки
+    				for(int  i= 0; i < size; i++) {
+    				    fprintf(output,"%lf ",Vec2[i]); // вывод 2 вектора
+    				}
+    				fprintf(output, ") = "); // доп скобки
     				for(int i = 0; i < size; i++) {
     					res += Vec1[i] * Vec2[i];
     				}
-    				printf("%lf", res);
+    				fprintf(output,"%lf\n", res);
     				break;
     			default:
-    				printf("\nНет такой операции");
+    				fprintf(output,"\nНет такой операции");
     		} // конец вложенного switch
     		free(Vec1); //освобождение памяти
     		free(Vec2);
 			break;
     	case '+':	//сложение
-    		printf("\nВведите первое число:");
-    		scanf(" %lf",&num1);
-    		printf("\nВведите второе число:");
-    		scanf(" %lf",&num2);
+    		fscanf(input, " %lf",&num1);
+    		fscanf(input," %lf",&num2);
     		res = num1 + num2;
-    		printf("\n%lf + %lf = %lf",num1,num2,res);
+    		fprintf(output,"\n%lf + %lf = %lf",num1,num2,res);
     		break;
     	case '-':	//вычитание
-    		printf("\nВведите первое число:");
-    		scanf(" %lf",&num1);
-    		printf("\nВведите второе число:");
-    		scanf(" %lf",&num2);
+    		fscanf(input, " %lf",&num1);
+    		fscanf(input," %lf",&num2);
     	    res = num1 - num2;
-    	    printf("\n%lf - %lf = %lf",num1,num2,res);
+    	    fprintf(output,"\n%lf - %lf = %lf",num1,num2,res);
     	    break;
     	case '*':	//умножение
-    		printf("\nВведите первое число:");
-    		scanf(" %lf",&num1);
-    		printf("\nВведите второе число:");
-    		scanf(" %lf",&num2);
+    		fscanf(input, " %lf",&num1);
+    		fscanf(input," %lf",&num2);
     	    res = num1 * num2;
-    	    printf("\n%lf * %lf = %lf",num1,num2,res);
+    	    fprintf(output,"\n%lf * %lf = %lf",num1,num2,res);
     	    break;
     	case '/':	//деление
-    		printf("\nВведите первое число:");
-    		scanf(" %lf",&num1);
-    		printf("\nВведите второе число:");
-    		scanf(" %lf",&num2);
+    		fscanf(input, " %lf",&num1);
+    		fscanf(input," %lf",&num2);
     	    res = num1 / num2;
-    	    printf("\n%lf / %lf = %lf",num1,num2,res);
+    	    fprintf(output,"\n%lf / %lf = %lf",num1,num2,res);
     	    break;
     	case '^':	//возведение в степень
-    		printf("\nВведите первое число:");
-    		scanf(" %lf",&num1);
-    		printf("\nВведите положительную степень:");
-    		scanf(" %lf",&num2);
+    		fscanf(input, " %lf",&num1);
+    		fscanf(input," %lf",&num2);
     		res = 1;
     	    for (double i = 1; i < num2; i++) {
     	    	res = res * num1;
     	    }
-    	    printf("\n%lf ^ %lf = %lf",num1,num2,res);
+    	    fprintf(output,"\n%lf ^ %lf = %lf",num1,num2,res);
     	    break;
     	case '!':	//факториал
-    		printf("\nВведите число:");
-    		scanf(" %lf",&num1);
+    		fscanf(input," %lf",&num1);
     		if (num1 > 0) {
     			double temp = num1;
     			for(double i = 1; i < num1; i++) {
     				temp = temp * (num1 - i);
     			}
-    			printf("%lf! = %lf", num1, temp);
+    			fprintf(output,"\n%lf! = %lf", num1, temp);
     		}
     		else if (num1 == 0) {
-    			printf("0! = 1");
+    			fprintf(output,"0! = 1");
     		}
     		else {
-    			printf("Введено не корекктное число");
+    			fprintf(output,"Введено не корекктное число");
     		}
     		break;
     	case ':':	//целочисленное деление
-    		printf("\nВведите первое число:");
-    		scanf(" %lf",&num1);
-    		printf("\nВведите второе число:");
-    		scanf(" %lf",&num2);
+    		fscanf(input, " %lf",&num1);
+    		fscanf(input," %lf",&num2);
     		res = (long int)num1 / (long int)num2;
-		    printf("\n%lf : %lf = %lf",num1,num2,res);
+		    fprintf(output,"\n%lf : %lf = %lf",num1,num2,res);
 		    break;
     	case ';':	//деление с остатком
-    		printf("\nВведите первое число:");
-    		scanf(" %lf",&num1);
-    		printf("\nВведите второе число:");
-    		scanf(" %lf",&num2);
+    		fscanf(input, " %lf",&num1);
+    		fscanf(input," %lf",&num2);
     		res = num1 - (((long int)num1 / (long int)num2) * num2);
-            printf("\n%lf ; %lf = %lf",num1,num2,res);
+            fprintf(output,"\n%lf ; %lf = %lf",num1,num2,res);
     	    break;
     	default:	//в случае не правильного ввода
-    	    printf("\nНет такой операции");
+    	    fprintf(output,"\nНет такой операции");
     }
-    printf("\nХотите повторить рассчет(y-да/n-нет):");
+    }
+    fclose(input); // закрытие
+    fclose(output);
+    printf("\nХотите повторить рассчет(y-да/n-нет):"); // повтор программы
     scanf(" %c", &agree);
     } while (agree == 'y');
 
